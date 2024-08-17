@@ -27,3 +27,7 @@ This web app provides food recommendations based on the weather using the OpenWe
 
 
 5. Open your browser and go to `http://localhost:3000`.
+
+
+## Note
+You can choose to use `server.mjs` (ES Module) or `server.js` (CommonJS) by switching the start script in the `package.json` file
