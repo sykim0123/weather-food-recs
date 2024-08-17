@@ -17,7 +17,8 @@ function showPosition(position) {
         .then(response => response.json())
         .then(data => {
             displayWeather(data);
-            makeFoodRecommendation(data);
+            // makeFoodRecommendation(data);
+            getGPTRecommendation(data);
         })
         .catch(error => {
             document.getElementById('weatherInfo').innerHTML = "Unable to retrieve weather data.";
@@ -65,14 +66,20 @@ function makeFoodRecommendation(weatherData) {
     document.getElementById('weatherMenuDisplay').innerHTML = recommendation;
 }
 
-function getGPTRecommendation() {
-    fetch('/gpt-recommendation')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('gptRecommendation').innerHTML = data.recommendation;
-        })
-        .catch(error => {
-            document.getElementById('gptRecommendation').innerHTML = "Unable to retrieve GPT recommendation.";
-            console.error('Error fetching GPT recommendation:', error);
-        });
+function getGPTRecommendation(weatherData) {
+    fetch('/gpt-recommendation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ weather: weatherData }) // Ensure this is sending the data correctly
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('gptRecommendation').innerHTML = data.recommendation;
+    })
+    .catch(error => {
+        document.getElementById('gptRecommendation').innerHTML = "Unable to retrieve GPT recommendation.";
+        console.error('Error fetching GPT recommendation:', error);
+    });
 }
