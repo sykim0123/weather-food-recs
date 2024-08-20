@@ -16,6 +16,7 @@ if (!OPENWEATHER_API_KEY || !GPT_API_KEY) {
 }
 
 app.use(express.static('public'));
+app.use(express.json()); // This allows your server to parse JSON in incoming requests
 
 app.get('/weather-recommendation', async (req, res) => {
     const lat = parseFloat(req.query.lat);
@@ -65,29 +66,16 @@ app.get('/weather-recommendation', async (req, res) => {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${GPT_API_KEY}`
-            }
+            },
+            body: JSON.stringify({
+                prompt: "Give me a food recommendation.",
+                max_tokens: 50
+            })
         });
-
-        const gptData = gptResponse.data;
-
-        if (!gptData || !gptData.choices || gptData.choices.length === 0) {
-            throw new Error('Invalid GPT response');
-        }
-
-        const recommendation = gptData.choices[0].message?.content?.trim() || gptData.choices[0].text?.trim();
-
-        // 결과 반환
-        res.json({ 
-            weather: weatherDescription, 
-            temperature: temperature, 
-            recommendation 
-        });
+        const data = await response.json();
+        res.json({ recommendation: data.choices[0].text.trim() });
     } catch (error) {
         console.error('Error fetching recommendation:', error);
         res.status(500).json({ error: 'Unable to retrieve recommendation' });
     }
-});
-
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
 });

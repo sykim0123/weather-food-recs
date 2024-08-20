@@ -54,8 +54,32 @@ function displayWeatherAndRecommendation(data) {
     weatherInfo.innerHTML = `Current weather: ${data.weather}, Temperature: ${data.temperature}°C`;
 
     const weatherIcon = document.getElementById('weatherIcon');
-    weatherIcon.innerHTML = `<img src="http://openweathermap.org/img/wn/${data.icon}.png" alt="Weather icon">`;
+    weatherIcon.innerHTML = `<img src="http://openweathermap.org/img/wn/${data.weather[0].icon}.png" alt="Weather icon">`;
+}
 
-    const recommendation = document.getElementById('recommendation');
-    recommendation.innerHTML = `Recommendation: ${data.recommendation}`;
+function makeFoodRecommendation(weatherData) {
+    const temp = weatherData.main.temp;
+    let recommendation;
+
+    if (temp > 25) {
+        recommendation = "How about a refreshing salad or some ice cream?";
+    } else if (temp > 15) {
+        recommendation = "Maybe a light pasta or a sandwich?";
+    } else {
+        recommendation = "How about some hot soup or a warm stew?";
+    }
+
+    document.getElementById('weatherMenuDisplay').innerHTML = recommendation;
+}
+
+function getGPTRecommendation() {
+    fetch('/gpt-recommendation')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('gptRecommendation').innerHTML = data.recommendation;
+        })
+        .catch(error => {
+            document.getElementById('gptRecommendation').innerHTML = "Unable to retrieve GPT recommendation.";
+            console.error('Error fetching GPT recommendation:', error);
+        });
 }
